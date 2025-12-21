@@ -69,7 +69,7 @@ O homelab é composto por **4 máquinas virtuais**:
   - SSH
 
 ### Máquina Atacante
-- Linux (Kali Linux)
+- Linux (ParootOS)
 - Utilizada para testar:
   - Ataques de força bruta no SSH
   - Funcionamento do Fail2ban
