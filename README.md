@@ -15,6 +15,17 @@ O laboratório foi pensado para fins **educacionais**, prática pessoal e como *
 
 ---
 
+## Requisitos
+
+- Software de virtualização:
+  - VMware Workstation / Player
+- Conhecimentos recomendados:
+  - Noções básicas de Linux
+  - Conceitos básicos de redes
+  - Interesse em segurança da informação
+
+---
+
 ## Tecnologias e Serviços Utilizados
 
 - Linux (Ubuntu Server 24.04.3 LTS)
@@ -117,20 +128,9 @@ _(imagem será adicionada posteriormente)_
 
 ---
 
-## Requisitos
-
-- Software de virtualização:
-  - VMware Workstation / Player
-- Conhecimentos recomendados:
-  - Noções básicas de Linux
-  - Conceitos básicos de redes
-  - Interesse em segurança da informação
-
----
-
 ##  Ordem de Implementação dos Serviços
 
-1. Instalação de serviços e configuração de rede
+1. Instalação de serviços
 2. Configuração do SSH
 3. Configuração do DHCP
 4. Configuração do DNS (Primário e Secundário)
