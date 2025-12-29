@@ -93,3 +93,41 @@ Esse serviço tem como objetivo entregar endereços ip para dispositivos endere�
 ```bash
 sudo apt install isc-dhcp-server
 ```
+### Configuração
+
+Antes de configurar derecione a interface que o serviço vai usar usando o seguinte comando:
+```bash
+sudo nano /etc/defaut/isc-dhcp-server
+```
+Após abrir o arquivo coloque o nome da interface entre "" na linha INTERFACESV4 e salve o arquivo
+
+Vamos fazer um backup do arquvivo dchpd.conf usando o comando:
+```bash
+sudo cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.backup
+```
+Após vamos editar o arquivo usando:
+```bash
+sudo nano /etc/dhcp/dhcpd.conf
+```
+
+Descomentei a linha de authoritative, e adcionei o seguinte no arquivo: 
+```bash
+subnet 172.16.0.0 netmask 255.255.255.0{ #Informa a subrede e seu tamanho
+  range 172.16.0.3 172.16.0.254; #Diz a faixa de endereço que vai ser usada na distribuição
+  option router 172.16.0.1; #Informa o endereço do gateway, no caso vai ser o proprio servidor
+  option domain-name-server 172.16.0.1, 172.16.0.2; #Informa o endereço dos servidores DNS
+}
+```
+Salve o arquivo, e verifique se não há erro de sintaxe usando: 
+```bash
+sudo dhcpd -t
+```
+Reinicie o serviço: 
+```bash
+sudo systemctl restart isc-dhcp-server
+```
+
+E verifique se está funcionando usando:
+```bash
+sudo systemctl status isc-dhcp-server
+```
