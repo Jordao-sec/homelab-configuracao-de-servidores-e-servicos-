@@ -104,8 +104,8 @@ _(imagem será adicionada posteriormente)_
 ## Endereçamento IP
 
 - Rede interna: `172.168.0.0/24`
-- Servidor Primário: `172.168.0.2`
-- Servidor Secundário: `172.168.0.3`
+- Servidor Primário: `172.168.0.1`
+- Servidor Secundário: `172.168.0.2`
 - Cliente: IP atribuído via DHCP
 - Atacante: IP atribuído via DHCP
 
