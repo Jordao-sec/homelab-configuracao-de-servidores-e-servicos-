@@ -68,6 +68,6 @@ Esse serviço tem como objetivo entregar endereços ip para dispositivos endere�
 
 ### Instação
 
-´´´bash
+```bash
 sudo apt install isc-dhcp-server
 ```
