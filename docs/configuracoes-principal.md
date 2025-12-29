@@ -67,6 +67,6 @@ Por fim, teste a conexão a partir do cliente que possui a chave privada corresp
 Esse serviço tem como objetivo entregar endereços ip para dispositivos endereço do gateway para acessar uma rede remota e o endereço do servidor DNS para resolução de nomes de sites e domínios.
 
 ### Instação
-´´´
+´´´bash
 sudo apt install isc-dhcp-server
 ´´´
