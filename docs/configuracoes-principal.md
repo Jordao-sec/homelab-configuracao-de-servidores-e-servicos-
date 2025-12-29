@@ -1,3 +1,12 @@
+### Estabelecer IP estático
+Para estabelecer um ip estático vamos usar o netplan usando o comando: 
+```bash
+sudo nano /etc/netplan/50-cloud-init.yaml
+```
+Vamos para interface ens37, a qual está voltada para a rede interna, vamos remover o dhcp4 dela e adcionar: 
+
+addresses:
+        - 172.16.0.1/24
 ### SSH
 Serviço necessário para acessar remotamente o servidor a partir de outro dispositivo na rede local ou remota.
 
