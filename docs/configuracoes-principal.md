@@ -1,47 +1,63 @@
 ### SSH
-Serviço necessario para acessar remotamente o servidor apartir de outro dispositivo na mesma rede.
+Serviço necessário para acessar remotamente o servidor a partir de outro dispositivo, geralmente pela mesma rede local (ou pela internet, se houver encaminhamento/roteamento adequado).
 
 ### Instalação
-Para o servidor responder esse serviço é necessario baixa-lo, usamos: 
-```bash 
+Para o servidor responder a esse serviço é necessário instalá‑lo. Usamos:
+```bash
 sudo apt install openssh-server
+```
 
-### Verficação
-Verifiquei se baixou tudo certo e se o serviço está rodando usando:
+### Verificação
+Verifique se o serviço foi instalado corretamente e se está ativo usando:
 ```bash
 sudo systemctl status ssh
+```
 
-Pode notar que o serviço não está rodando por tanto vamos ativa-lo usando:
+Se o serviço não estiver ativo, inicie‑o com:
 ```bash
 sudo systemctl start ssh
+```
 
-Verificamos se está rodando usando:
+Para garantir que o serviço inicie automaticamente na inicialização, você pode habilitá‑lo:
+```bash
+sudo systemctl enable ssh
+```
+
+Verifique novamente o status:
 ```bash
 sudo systemctl status ssh
+```
 
 ### Configuração
-Após verificar é recomendavel fazer algumas configurações extras no proprio serviço de SSH para garantir mais segurança.
-Irei editar o arquivo de configuração do SSH usando:
+Após verificar a instalação, é recomendável fazer algumas configurações no serviço SSH para aumentar a segurança.
+
+Edite o arquivo de configuração do SSH:
 ```bash
 sudo nano /etc/ssh/sshd_config
+```
 
-Já dentro do arquivo vamos procurar as seguintes linhas: PermitRootLogin, MaxAuthTries, MaxSessions, PubkeyAuthetication e PasswordAuthetication.
-Vamos descomentar todas elas, já que quando comentadas vão agir de forma padrão. E vamos definir os seguintes parametros para cada uma delas:
+Dentro do arquivo, procure as seguintes diretivas e ajuste conforme abaixo (remova o comentário caso estejam comentadas, pois quando comentadas usam o comportamento padrão):
 
-PermitRootLogin no Impede login direto como root (obrigatório para segurança – ataque comum é brute-force no root).
+- PermitRootLogin no  
+  - Impede login direto como root (recomendado para segurança; evita ataques de força bruta ao usuário root).
 
-MaxAuthTries 3 Essa linha nos pergunta quantas tentativas são permitidas para autenticar com sucesso antes de derrubar a conexão, isso ajuda atrapalhar ataques de força bruta, por tanto vamos deixar em 3 tentativas.
+- MaxAuthTries 3  
+  - Número de tentativas de autenticação permitidas antes de derrubar a conexão; ajuda a reduzir ataques de força bruta.
 
-MaxSessions 3 Essa linha nos diz quantas conexões SSH o servidor deve atender simultaniamente, não é necessario ter muitas conexões simultanêas então quanto menos melhor, vamos estabelecer 3.
+- MaxSessions 3  
+  - Número máximo de sessões simultâneas por conexão SSH; não é necessário um valor alto em ambientes domésticos.
 
-Importânte/Observação: As ultimas duas opções só poderam ser configuradas após configuração do DHCP ou Definir um IP estático (Provisorio) e o cliente deve mandar sua chave publica para o servidor antes de bloquear a autenticação por senha, mas ambos estão sem conectividade um com o outro.
+Importante/Observação: as últimas duas opções descritas abaixo (autenticação por chave e por senha) só poderão ser usadas corretamente após configurar um IP estático ou uma reserva DHCP (se necessário) e garantir que o cliente já tenha enviado a sua chave pública ao servidor (arquivo `~/.ssh/authorized_keys` do usuário).
 
-PubkeyAuthetication yes Habilita autenticação por chaves SSH (mais segura que senha). 
+- PubkeyAuthentication yes  
+  - Habilita autenticação por chave pública (mais segura que senha).
 
-PasswordAuthetication no Essa linha nos pergunta se vamos permitir o uso de senha, para restringir ataques de força bruta vamos deixar em no já que é possível apenas dispositivos com a chave privada correta poderam se autenticar no servidor.
+- PasswordAuthentication no  
+  - Desabilita autenticação por senha. Se for usar somente autenticação por chave privada, defina como `no` para reduzir a superfície de ataque.
 
-Salvamos o arquivo, para garantir que as alterações estão funcionando vamos usar:
+Depois de salvar o arquivo, reinicie o serviço para aplicar as alterações:
 ```bash
-sudo systemctl restart ssh 
+sudo systemctl restart ssh
+```
 
-Dai é só testar a configuração.
+Por fim, teste a conexão a partir do cliente que possui a chave privada correspondente (por exemplo: `ssh usuario@ip_do_servidor`) para garantir que tudo esteja funcionando.
