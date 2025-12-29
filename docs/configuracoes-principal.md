@@ -1,5 +1,5 @@
 ### SSH
-Serviço necessário para acessar remotamente o servidor a partir de outro dispositivo, geralmente pela mesma rede local (ou pela internet, se houver encaminhamento/roteamento adequado).
+Serviço necessário para acessar remotamente o servidor a partir de outro dispositivo na rede local ou remota.
 
 ### Instalação
 Para o servidor responder a esse serviço é necessário instalá‑lo. Usamos:
@@ -36,7 +36,7 @@ Edite o arquivo de configuração do SSH:
 sudo nano /etc/ssh/sshd_config
 ```
 
-Dentro do arquivo, procure as seguintes diretivas e ajuste conforme abaixo (remova o comentário caso estejam comentadas, pois quando comentadas usam o comportamento padrão):
+Dentro do arquivo, procure as seguintes diretivas e ajuste conforme abaixo:
 
 - PermitRootLogin no  
   - Impede login direto como root (recomendado para segurança; evita ataques de força bruta ao usuário root).
@@ -47,7 +47,7 @@ Dentro do arquivo, procure as seguintes diretivas e ajuste conforme abaixo (remo
 - MaxSessions 3  
   - Número máximo de sessões simultâneas por conexão SSH; não é necessário um valor alto em ambientes domésticos.
 
-Importante/Observação: as últimas duas opções descritas abaixo (autenticação por chave e por senha) só poderão ser usadas corretamente após configurar um IP estático ou uma reserva DHCP (se necessário) e garantir que o cliente já tenha enviado a sua chave pública ao servidor (arquivo `~/.ssh/authorized_keys` do usuário).
+Importante/Observação: as últimas duas opções descritas abaixo (autenticação por chave e por senha) só poderão ser usadas corretamente após configurar um IP estático ou configurar o DHCP para garantir que o cliente já tenha enviado a sua chave pública ao servidor (arquivo `~/.ssh/authorized_keys` do usuário).
 
 - PubkeyAuthentication yes  
   - Habilita autenticação por chave pública (mais segura que senha).
@@ -61,3 +61,12 @@ sudo systemctl restart ssh
 ```
 
 Por fim, teste a conexão a partir do cliente que possui a chave privada correspondente (por exemplo: `ssh usuario@ip_do_servidor`) para garantir que tudo esteja funcionando.
+
+
+### DHCP 
+Esse serviço tem como objetivo entregar endereços ip para dispositivos endereço do gateway para acessar uma rede remota e o endereço do servidor DNS para resolução de nomes de sites e domínios.
+
+### Instação
+´´´
+sudo apt install isc-dhcp-server
+´´´
