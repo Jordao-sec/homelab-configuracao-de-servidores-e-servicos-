@@ -189,7 +189,7 @@ zone "0.16.172.in-addr.arpa" #Resolução inversa transformar ip em nome de dom�
     file "/etc/bind/zones/db.172.16.0";  # 172.16.0.0/24 subrede
     allow-transfer { 172.16.0.2; };  # Endereço do servidor secundario que vai receber as intruções
 };
-
+```
 Salve o arquivo, vamos criar um diretorio zones usando:
 ```bash
 sudo mkdir /etc/bind/zones
