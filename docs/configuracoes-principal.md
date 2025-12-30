@@ -131,3 +131,74 @@ E verifique se está funcionando usando:
 ```bash
 sudo systemctl status isc-dhcp-server
 ```
+Caso não funcione verifique se há erros de sintaxe usando:
+```bash
+sudo dhcpd -t
+```
+Após isso realize o teste simplesmente ligando a maquina cliente, que vai pegar o endereço ip automaticamete
+E use o seguinte comando no servidor para garantir que o cliente pegou o ip dele:
+```bash
+sudo journalctl -u isc-dhcp-server -f
+```
+
+### DNS
+Esse serviço serve para transformar endereços de domino de sites em endereços ip, o servidor vai atuar como resolver DNS, ele vai resolver o nome de dominio na rede interna, caso ele não saiba qual enderço aquele dominio ele vai passar a solicitação a diante para um root sever na internet para o DNS do google (8.8.8.8, 8.8.4.4)
+
+### Instalação
+Para instalar o serviço use:
+```bash
+sudo apt install bind9 bind9-doc bind9utils
+```
+O bind9-doc é a documentação do software que inclui manuais, guias e informações detalhadas sobre como resolver problemas, já bind9utils baixa um conjunto de ferramentas para testar o funcionamento do DNS no servidor
+
+### Configuração
+Vamos editar o arquivo named.conf.options, mas antes vamos fazer uma copia de segurança usando:
+```bash
+sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
+```
+Agora vamos abir o arquivo usando: 
+```bash
+sudo nano /etc/bind/named.conf.options
+```
+Vamos procurar a linha: directory "/var/cache/bin9"; e escrever as configurações embaixo dela  Você pode apagar todo o texto comentado (Linhas que tem "//" no começo)  nesse arquivo se desejar para deixar o arquivo menor e mais limpo. Adicionei o seguinte:
+```bash
+        recursion yes;                 # permite o sevidor passar as solicitações para outros servidores
+        listen-on { 10.128.10.11; };   # endereço o qual o servidor vai receber as solicitações
+        allow-transfer { none; };      # disabilita a transferência por zona por padrão 
+
+        forwarders {
+                8.8.8.8; # Endereço dos servidores DNS na internet
+                8.8.4.4;
+        };
+```
+
+Agora vamos abir o seguinte arquivo:
+```bash
+sudo nano /etc/bind/named.conf.local
+```
+Adcionei o seguinte em qualquer parte do arquivo:
+```bash
+zone "www.laboratorio.com" #Nome da zona {
+    type master; #Como o servidor vai atuar
+    file "/etc/bind/zones/db.www.laboratorio.com"; # Arquivo da zona
+    allow-transfer { 172.16.0.2; };  # Endereço do servidor secundario que vai receber as instruções
+};
+
+zone "0.16.172.in-addr.arpa" #Resolução inversa transformar ip em nome de domínio {
+    type master;
+    file "/etc/bind/zones/db.172.16.0";  # 172.16.0.0/24 subrede
+    allow-transfer { 172.16.0.2; };  # Endereço do servidor secundario que vai receber as intruções
+};
+
+Salve o arquivo, vamos criar um diretorio zones usando:
+```bash
+sudo mkdir /etc/bind/zones
+```
+Vamos copiar o arquivo db.local que tem uma base pronta para o arquivo db.www.laboratorio.com usando o comando:
+```bash
+sudo cp /etc/bind/db.local /etc/bind/zones/db.www.laboratorio.com
+```
+Vamos editar o arquivo usando:
+```bash
+sudo nano /etc/bind/zones/db.www.laboratorio.com
+```
