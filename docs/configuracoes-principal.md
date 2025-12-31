@@ -202,3 +202,79 @@ Vamos editar o arquivo usando:
 ```bash
 sudo nano /etc/bind/zones/db.www.laboratorio.com
 ```
+Procure a linha que está escrito localhost. root.localhost. e subistitui por:
+```bash
+ns1.www.laboratorio.com. admin.laboratorio.com. (
+                              3         ; Serial
+
+```
+Não se esqueça de trocar o valor do serial para 3
+Apagei as ultimas 3 linhas do arquivo e subistitui por:
+```
+;Nome dos servidores DNS 
+    IN      NS      ns1.www.laboratorio.com.
+    IN      NS      ns2.www.laboratorio.com.
+
+;Endereço dos dominios 
+ns1.www.laboratorio.com.          IN      A       172.16.0.1
+ns2.www.laboratorio.com.          IN      A       172.16.0.2
+```
+Vamos criar a zona reversa para transformar o ip em dominio, para isso vamos copiar o arquivo base db.127 usando o seguinte comando:
+```bash
+sudo cp /etc/bind/db.127 /etc/bind/zones/db.172.16.0
+```
+Vamos editar o arquivo db.172.16.0 usando: 
+```bash
+sudo nano /etc/bind/zones/db.172.16.0
+```
+Procure a linha que está escrito localhost. root.localhost. e subistitui por:
+```bash
+ns1.www.laboratorio.com. admin.laboratorio.com. (
+                              3         ; Serial
+
+```
+Não se esqueça de trocar o valor do serial para 3
+Apague as duas ultimas linhas e subistitui por: 
+```bash
+;Nome dos servidores DNS
+      IN      NS      ns1.www.laboratorio.com.
+      IN      NS      ns2.www.laboratorio.com.
+
+;Endereço dos dominios  
+16.0.1   IN      PTR     ns1.www.laboratorio.com.              
+16.0.2   IN      PTR     ns2.www.laboratorio.com.
+```
+Verifiquei se há algum erro nos arquivos usando os comandos: 
+```bash
+sudo named-checkconf #Não deve aparecer nada após usar o comando
+sudo named-checkzone www.laboratorio.com /etc/bind/zones/db.www.laboratorio.com #Deve aparecer OK
+sudo named-checkzone 0.16.172.in-addr.arpa /etc/bind/zones/db.172.16.0 #Deve aparecer OK
+```
+Reinicie o serviço usando:
+```bash
+sudo systemctl restart bind9
+```
+Antes de realizar os teste no cliente é preciso permitir que o servidor consiga fazer NAT para permite que o cliente consiga acessar a internet, que por padrão ele não faz.
+Foi habilitado o IP Forward no kernel Linux para permitir que o servidor atue como roteador, encaminhando pacotes entre a interface da rede interna e a interface conectada à internet. É preciso editar o seguinte arquivo:
+```bash
+sudo nano /etc/sysctl.conf
+```
+Descomentar a linha net.ipv4.ip_forward=1 e salvar o arquivo.
+Depois crie as seguintes regras no iptables:
+```bash
+sudo iptables -t nat -A POSTROUTING -o ens33 -j MASQUERADE # Permite que os endereços IP privados da rede interna tenham acesso à rede externa e posteriomene a internet através da interface externa do servidor.
+iptables -A FORWARD -i ens37 -o ens33 -j ACCEPT #Permite pacotes que venham da rede interna vão para a rede externa
+```
+Instale o seguinte:
+```bash
+sudo apt install iptables-persistent #Deixa as regras do iptables persistentes
+```
+Salve as regras usando:
+```bash
+sudo netfilter-persistent save
+```
+Agora realize os testes no cliente usando os seguintes comandos:
+```bash
+ping #Nome de Domínio
+nslookup #Endereço ip ou nome de domínio
+```
