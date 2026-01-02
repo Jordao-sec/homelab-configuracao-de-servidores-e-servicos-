@@ -67,7 +67,7 @@ Procure e altere (ou adicione) as seguintes diretivas conforme indicado:
 - MaxSessions 3  
   - Número máximo de sessões simultâneas por conexão SSH; valores baixos são suficientes em ambientes domésticos.
 
-Observação: as opções abaixo (autenticação por chave e por senha) devem ser usadas após configurar corretamente a rede (IP estático ou DHCP conforme o ambiente):
+Observação: as opções abaixo (autenticação por chave e por senha) devem ser usadas após configurar DHCP e o cliente enviar sua chave publica para o servidor:
 
 - PubkeyAuthentication yes  
   - Habilita autenticação por chave pública (mais segura que senha).
@@ -297,7 +297,88 @@ sudo netfilter-persistent save
 #### Testes no cliente
 No cliente, teste resolução e conectividade:
 ```bash
-ping nomedominio                # Ex.: ping www.laboratorio.com
-nslookup nomedominio_ou_ip      # Ex.: nslookup www.laboratorio.com
+ping nomedominio                # Ex.: ping ns1.www.laboratorio.com ou algum site da internet
+nslookup nomedominio_ou_ip      # Ex.: nslookup ns1.www.laboratorio.com ou algum site da internet
 ```
+### Docker
+Docker é uma plataforma para criação e adminstração de serviços rodando em containers.
 
+### Instalação
+Para baixar o docker é necessario adcionar o repositório oficial do Docker no servidor, configurando a verificação criptográfica dos pacotes via GPG para garantir downloads seguros e autênticos. Use os seguintes comandos:
+```bash
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+```
+Baixe o docker usando o seguinte comando:
+```bash
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+Este comando instala o Docker Engine, a interface de linha de comando, o runtime de containers (containerd) e plugins modernos como Buildx e Docker Compose, permitindo a criação, execução e orquestração de containers de forma segura e atualizada.
+
+Verifique se o docker está funcioando usando:
+```bash
+sudo systemctl status docker
+```
+Teste o funcionamento do docker usando o seguinte comando:
+```bash
+sudo docker run hello-world
+```bash
+
+### Wordpress
+O Wordpress é um sistema de gerenciamento de conteudo(CMS) para criar e gerenciar diversos tipos de sites (blogs, lojas virtuais, portfólios, portais)
+### Instalação
+Para instalar o Wordpress é necessário baixar usa imagem apartir de um arquivo compose, crie um diretorio para o Wordpress usando o comando:
+```bash
+sudo mkdir /home/servidor/wordpress
+```
+Crie um arquivo chamado compose.yaml usando o comando:
+```bash
+sudo nano /home/servidor/wordpress/compose.yaml
+```
+Coloque o seguinte no arquivo:
+```
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
+```
+(Falta explicar sobre a instalação)
+Suba o container usando o comando:
+```bash
+sudo docker compose up
+```
+Dentro do cliente tente acessar o Wordpress no navegador usando: http://ns1.www.laboratorio.com:8080 ou http://172.16.0.1:8080
