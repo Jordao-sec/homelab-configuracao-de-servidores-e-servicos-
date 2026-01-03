@@ -382,3 +382,38 @@ Suba o container usando o comando:
 sudo docker compose up
 ```
 Dentro do cliente tente acessar o Wordpress no navegador usando: http://ns1.www.laboratorio.com:8080 ou http://172.16.0.1:8080
+
+### Portainer
+O Portainer é uma ferramenta de gerenciamento de contêineres, muito útil para administrar contêineres por meio de um navegador web.
+
+### Instalação 
+Para baixar o Portainer, utilize o seguinte comando:o:
+```bash
+sudo curl -L https://downloads.portainer.io/ce-lts/portainer-compose.yaml -o portainer-compose.yaml
+```
+Para subir o Portainer, execute::
+```
+sudo docker compose -f portainer-compose.yaml up -d
+```
+Após a instalação, teste o Portainer acessando pelo navegador do cliente através de um dos endereços abaixo:
+https://ns1.www.laboratorio.com:9443
+https://172.16.0.1:9443
+
+### Webmin
+O Webmin é uma ferramenta de gerenciamento remoto de sistemas, ideal para usuários que não possuem muita experiência com Linux, pois oferece uma interface gráfica via navegador.
+
+### Instalação
+Para instalar o Webmin, é necessário primeiro adicionar o repositório oficial ao servidor utilizando o comando:
+```bash
+curl -o webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
+sudo sh webmin-setup-repo.sh
+```
+Após configurar o repositório, instale o Webmin com o comando:
+```bash
+sudo apt-get install webmin
+```
+Após a instalação, teste o Webmin acessando pelo navegador do cliente através de um dos endereços abaixo:
+https://ns1.www.laboratorio.com:10000
+https://172.16.0.1:10000
+
+###
