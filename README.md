@@ -115,16 +115,17 @@ _(imagem será adicionada posteriormente)_
 
 - **Servidor Primário**
   - 1 interface em modo **Bridge** (acesso à internet)
-  - 1 interface em rede **customizada isolada para VMs(Vmnet0)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
 
 - **Servidor Secundário**
-  - 1 interface em rede **customizada isolada para VMs(Vmnet0)**
+  - 1 interface em modo **Bridge** (acesso à internet)
+  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
 
 - **Cliente**
-  - 1 interface em rede **customizada isolada para VMs(Vmnet0)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
 
 - **Atacante**
-  - 1 interface em rede **customizada isolada para VMs(Vmnet0)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
 
 ---
 
@@ -137,8 +138,7 @@ _(imagem será adicionada posteriormente)_
 5. Configuração do NTP
 6. Instalação do Docker
 7. Deploy do WordPress em container
-8. Instalação do Webmin
-9. Instalação do Portainer
+8. Instalação do Portainer
+9. Instalação do Webmin  
 10. Configuração do Fail2ban
 11. Configuração do iptables
-12. Testes de ataque e validação da segurança
