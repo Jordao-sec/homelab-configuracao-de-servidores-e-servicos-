@@ -302,7 +302,37 @@ nslookup nomedominio_ou_ip      # Ex.: nslookup ns1.www.laboratorio.com ou algum
 ```
 
 ### NTP
+O NTP é um protocolo de sicronização de tempo para todos os dispositívos da rede estarem com o relogio sincronizado.
 
+### Instalação
+Para instalar o NTP use o comando:
+```bash
+sudo apt install chrony
+```
+
+### Configuração
+Para configurar o NTP abra o arquivo chrony.conf. Usando o seguinte comando:
+```bash
+sudo nano /etc/chrony/chrony.conf
+```
+Apague substitua os servidores do ubuntu pelos os servidores ntp.br da seguinte forma:
+```
+server a.st1.ntp.br iburst nts
+server b.st1.ntp.br iburst nts
+server c.st1.ntp.br iburst nts
+server d.st1.ntp.br iburst nts
+server gps.ntp.br iburst nts
+```
+Salve o arquivo e reinicie o serviço usando:
+```bash
+sudo systemctl restart chrony
+```
+### Teste
+Verfique o funcioanamento do NTP usando os seguintes comandos:
+```bash
+chronyc tracking
+chronyc sources
+```
 
 ### Docker
 Docker é uma plataforma para criação e adminstração de serviços rodando em containers.
@@ -391,11 +421,11 @@ Dentro do cliente tente acessar o Wordpress no navegador usando: http://ns1.www.
 O Portainer é uma ferramenta de gerenciamento de contêineres, muito útil para administrar contêineres por meio de um navegador web.
 
 ### Instalação 
-Para baixar o Portainer, utilize o seguinte comando:o:
+Para baixar o Portainer, utilize o seguinte comando:
 ```bash
 sudo curl -L https://downloads.portainer.io/ce-lts/portainer-compose.yaml -o portainer-compose.yaml
 ```
-Para subir o Portainer, execute::
+Para subir o Portainer, execute:
 ```
 sudo docker compose -f portainer-compose.yaml up -d
 ```
@@ -417,8 +447,8 @@ Após configurar o repositório, instale o Webmin com o comando:
 sudo apt-get install webmin
 ```
 Após a instalação, teste o Webmin acessando pelo navegador do cliente através de um dos endereços abaixo:
-https://ns1.www.laboratorio.com:10000
-https://172.16.0.1:10000
+  https://ns1.www.laboratorio.com:10000
+  https://172.16.0.1:10000
 
 ### Fail2ban
 O Fail2ban é uma ferramenta que ajuda a previnir ataques de força bruta no servidor e bloquear atacantes.
