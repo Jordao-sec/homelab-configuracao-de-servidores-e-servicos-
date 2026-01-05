@@ -416,4 +416,54 @@ Após a instalação, teste o Webmin acessando pelo navegador do cliente atravé
 https://ns1.www.laboratorio.com:10000
 https://172.16.0.1:10000
 
-###
+### Fail2ban
+O Fail2ban é uma ferramenta que ajuda a previnir ataques de força bruta no servidor e bloquear atacantes.
+
+### Instalação 
+Para baixar o Fail2ban use o comando:
+```bash
+sudo apt install fail2ban
+```
+Crie um arquivo de configuração local do jail.conf, pois ele pode acabar sendo sobrescrito em caso de atualizações futuras do fail2ban, o use o comando:
+```bash
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
+Abra o arquivo usando:
+```bash
+sudo nano /etc/fail2ban/jail.local
+```
+Após abir procure as linhas e edite:
+```
+bantime = 5m # Tempo de banimento após atingir o maxímo de tentativas por período (10 minutos) 
+findtime = 1m # Período de tentativas (1 minuto) 
+maxretry = 5 # Maxímo de tentaivas por período antes do banimento
+```
+Após procure [sshd] o daemon do ssh e adcione embaixo enabled = true. Dessa forma:
+```
+[sshd]
+enabled = true
+```
+Salve o arquivo, reinicei o serviço usando: 
+```bash
+sudo systemctl restart fail2ban
+```
+Verifique se a jail está ativa usando:
+```bash
+sudo fail2ban-client status
+```
+### Teste
+Para o teste, abra o arquivo fail2ban.log em tempo real usando o seguinte comando:
+```bash
+tail -f /var/log/fail2ban.log
+```
+Agora na maquina atacante faça uma wordlist para o teste ou pegue uma já pronta como rockyou.txt, para descompactar ela use:
+```bash
+sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+```
+Realize o ataque usando o comando:
+```bash
+sudo hydra -l servidor -P /usr/share/wordlists/rockyou.txt ssh://172.16.0.1 -V
+```
+(Foto do ataque mal sucedido)
+
+### Iptables
