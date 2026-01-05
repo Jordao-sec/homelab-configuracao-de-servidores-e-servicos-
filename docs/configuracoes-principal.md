@@ -300,6 +300,10 @@ No cliente, teste resolução e conectividade:
 ping nomedominio                # Ex.: ping ns1.www.laboratorio.com ou algum site da internet
 nslookup nomedominio_ou_ip      # Ex.: nslookup ns1.www.laboratorio.com ou algum site da internet
 ```
+
+### NTP
+
+
 ### Docker
 Docker é uma plataforma para criação e adminstração de serviços rodando em containers.
 
@@ -467,3 +471,27 @@ sudo hydra -l servidor -P /usr/share/wordlists/rockyou.txt ssh://172.16.0.1 -V
 (Foto do ataque mal sucedido)
 
 ### Iptables
+O iptables é o firewall nativo do linux para filtrar o trafego.
+
+### Configuração 
+Para configurar o iptables use o script localizado em scripts/firewall.sh. Ele configura:
+
+Políticas restritivas (DROP) por padrão.
+
+Libera as portas dos serviços.
+
+Roteamento entre as interfaces ens37 (LAN) e ens33 (WAN).
+
+Para executar use o comando:
+```bash
+sudo chmod +x script/firewall.sh
+sudo ./script/firewall.sh
+```
+Verifique as regras usando o comando:
+```bash
+sudo iptables -L -v -n
+```
+No cliente faça as os mesmos testes do DNS para verificar se roteamento está fucnionando e veja todas as portas abertas com o nmap usando o comando:
+```bash
+sudo nmap -p- 172.16.0.1
+```
