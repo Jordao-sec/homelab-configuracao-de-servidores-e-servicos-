@@ -19,78 +19,12 @@ Verifique a configuração com:
 ip a
 ```
 
-### SSH
-O serviço SSH permite acessar o servidor remotamente a partir de outros dispositivos na rede local ou remota.
-
-#### Instalação
-Instale o servidor SSH:
-```bash
-sudo apt update
-sudo apt install openssh-server
-```
-
-#### Verificação
-Verifique se o serviço está instalado e ativo:
-```bash
-sudo systemctl status ssh
-```
-
-Se não estiver ativo, inicie-o:
-```bash
-sudo systemctl start ssh
-```
-
-Para habilitar a inicialização automática:
-```bash
-sudo systemctl enable ssh
-```
-
-Verifique novamente:
-```bash
-sudo systemctl status ssh
-```
-
-#### Configuração
-Recomenda-se ajustar algumas diretivas para aumentar a segurança. Edite o arquivo de configuração:
-```bash
-sudo nano /etc/ssh/sshd_config
-```
-
-Procure e altere (ou adicione) as seguintes diretivas conforme indicado:
-
-- PermitRootLogin no  
-  - Impede login direto como root (recomendado para segurança; reduz tentativas de força bruta ao usuário root).
-
-- MaxAuthTries 3  
-  - Número de tentativas de autenticação permitidas antes de encerrar a conexão; ajuda a reduzir ataques de força bruta.
-
-- MaxSessions 3  
-  - Número máximo de sessões simultâneas por conexão SSH; valores baixos são suficientes em ambientes domésticos.
-
-Observação: as opções abaixo (autenticação por chave e por senha) devem ser usadas após configurar DHCP e o cliente enviar sua chave publica para o servidor:
-
-- PubkeyAuthentication yes  
-  - Habilita autenticação por chave pública (mais segura que senha).
-
-- PasswordAuthentication no  
-  - Desabilita autenticação por senha. Se for usar exclusivamente autenticação por chave pública, defina como `no` para reduzir a superfície de ataque.
-
-Após salvar, reinicie o serviço:
-```bash
-sudo systemctl restart ssh
-```
-
-Teste a conexão a partir do cliente que possui a chave privada correspondente:
-```bash
-ssh usuario@ip_do_servidor
-```
-
 ### DHCP
 O serviço DHCP atribui endereços IP a dispositivos, além de informar o gateway e servidores DNS para acesso à rede e à Internet.
 
 #### Instalação
+Para baixar o DHCP use o seguinte comando:
 ```bash
-sudo apt update
 sudo apt install isc-dhcp-server
 ```
 
@@ -143,6 +77,81 @@ sudo dhcpd -t
 No cliente, teste reiniciando a interface de rede ou ligando a máquina; o cliente deve obter um IP automaticamente. No servidor, monitore os logs para confirmar a concessão:
 ```bash
 sudo journalctl -u isc-dhcp-server -f
+```
+### SSH
+O serviço SSH permite acessar o servidor remotamente a partir de outros dispositivos na rede local ou remota.
+
+#### Instalação
+Instale o servidor SSH:
+```bash
+sudo apt update
+sudo apt install openssh-server
+```
+
+#### Verificação
+Verifique se o serviço está instalado e ativo:
+```bash
+sudo systemctl status ssh
+```
+
+Se não estiver ativo, inicie-o:
+```bash
+sudo systemctl start ssh
+```
+
+Para habilitar a inicialização automática:
+```bash
+sudo systemctl enable ssh
+```
+
+Verifique novamente:
+```bash
+sudo systemctl status ssh
+```
+
+#### Configuração
+Recomenda-se ajustar algumas diretivas para aumentar a segurança. Edite o arquivo de configuração:
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Procure e altere (ou adicione) as seguintes diretivas conforme indicado:
+
+- PermitRootLogin no  
+  - Impede login direto como root (recomendado para segurança; reduz tentativas de força bruta ao usuário root).
+
+- MaxAuthTries 3  
+  - Número de tentativas de autenticação permitidas antes de encerrar a conexão; ajuda a reduzir ataques de força bruta.
+
+- MaxSessions 3  
+  - Número máximo de sessões simultâneas por conexão SSH.
+
+*Observação: as opções abaixo (autenticação por chave e por senha) devem ser usadas após o cliente enviar sua chave publica para o servidor.
+No cliente crie o par de chaves de 2048 bits usando o comando:
+```bash
+ssh-keygen -t rsa -b 2048 -C "Homelab"
+```
+ Envie para o servidor usando o comando:
+ ```bash
+ssh-copy-id homelab.pub servidor@172.16.0.1
+```
+Agora sim essas opções do arquivo sshd_conf podem ser modificas para essas:
+
+- PubkeyAuthentication yes  
+  - Habilita autenticação por chave pública (mais segura que senha).
+
+- PasswordAuthentication no  
+  - Desabilita autenticação por senha. Se for usar exclusivamente autenticação por chave pública, defina como `no` para reduzir a superfície de ataque.
+*Observação: O arquivo deve voltar para o padrão para realizar o teste do fail2ban
+
+Após salvar, reinicie o serviço:
+```bash
+sudo systemctl restart ssh
+```
+
+Teste a conexão a partir do cliente que possui a chave privada correspondente:
+```bash
+ssh -i homelab servidor@172.16.0.1  
 ```
 
 ### DNS
@@ -315,13 +324,14 @@ Para configurar o NTP abra o arquivo chrony.conf. Usando o seguinte comando:
 ```bash
 sudo nano /etc/chrony/chrony.conf
 ```
-Apague substitua os servidores do ubuntu pelos os servidores ntp.br da seguinte forma:
+Apague substitua os servidores do ubuntu pelos os servidores ntp.br e permita que responda as solicitações da rede interna da seguinte forma:
 ```
 server a.st1.ntp.br iburst nts
 server b.st1.ntp.br iburst nts
 server c.st1.ntp.br iburst nts
 server d.st1.ntp.br iburst nts
 server gps.ntp.br iburst nts
+allow 172.16.0.0/24
 ```
 Salve o arquivo e reinicie o serviço usando:
 ```bash
@@ -517,7 +527,7 @@ sudo hydra -l servidor -P /usr/share/wordlists/rockyou.txt ssh://172.16.0.1 -V
 O iptables é o firewall nativo do linux para filtrar o trafego.
 
 ### Configuração 
-Para configurar o iptables use o script localizado em scripts/firewall.sh. Ele configura:
+Para configurar o iptables use o script deste repositorio localizado em scripts/firewall.sh. Ele configura:
 
 Políticas restritivas (DROP) por padrão.
 
@@ -527,8 +537,8 @@ Roteamento entre as interfaces ens37 (LAN) e ens33 (WAN).
 
 Para executar use o comando:
 ```bash
-sudo chmod +x script/firewall.sh
-sudo ./script/firewall.sh
+sudo chmod +x firewall.sh
+sudo ./firewall.sh
 ```
 Verifique as regras usando o comando:
 ```bash
