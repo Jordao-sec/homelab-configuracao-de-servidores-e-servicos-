@@ -365,7 +365,7 @@ sudo systemctl status docker
 Teste o funcionamento do docker usando o seguinte comando:
 ```bash
 sudo docker run hello-world
-```bash
+```
 
 ### Wordpress
 O Wordpress é um sistema de gerenciamento de conteudo(CMS) para criar e gerenciar diversos tipos de sites (blogs, lojas virtuais, portfólios, portais)
@@ -410,18 +410,32 @@ volumes:
   wordpress:
   db:
 ```
-(Falta explicar sobre a instalação)
-Suba o container usando o comando:
+Esse arquivo vai baixar as imagens do banco de dados e do wordpress
+
+Entre no diretorio do wordpress usando o comando:
+```bash
+cd /home/servidor/wordpress
+```
+
+Suba o conteiner usando o comando: 
 ```bash
 sudo docker compose up
 ```
-Dentro do cliente tente acessar o Wordpress no navegador usando: http://ns1.www.laboratorio.com:8080 ou http://172.16.0.1:8080
+Após a instalação pressione a tecla "d" para voltar ao terminal.
+
+### Teste
+Dentro do cliente tente acessar o Wordpress no navegador usando: http://ns1.www.laboratorio.com:8080 ou http://172.16.0.1:8080 e seguir o passo a passo para terminar a instalação.
 
 ### Portainer
 O Portainer é uma ferramenta de gerenciamento de contêineres, muito útil para administrar contêineres por meio de um navegador web.
 
 ### Instalação 
-Para baixar o Portainer, utilize o seguinte comando:
+Para baixar o Portainer, crie um diretorio para ele e entre no diretorio usando os comandos:
+```bash
+sudo mkdir /home/servidor/portainer
+cd /home/servidor/portainer
+```
+Baixe o arquivo compose do portainer usando o comando: 
 ```bash
 sudo curl -L https://downloads.portainer.io/ce-lts/portainer-compose.yaml -o portainer-compose.yaml
 ```
@@ -444,12 +458,12 @@ sudo sh webmin-setup-repo.sh
 ```
 Após configurar o repositório, instale o Webmin com o comando:
 ```bash
-sudo apt-get install webmin
+sudo apt-get install --install-recommends webmin usermin
 ```
 Após a instalação, teste o Webmin acessando pelo navegador do cliente através de um dos endereços abaixo:
   https://ns1.www.laboratorio.com:10000
   https://172.16.0.1:10000
-
+Para logar basta apenas o nome de usario e senha do proprio servidor.
 ### Fail2ban
 O Fail2ban é uma ferramenta que ajuda a previnir ataques de força bruta no servidor e bloquear atacantes.
 
@@ -468,11 +482,11 @@ sudo nano /etc/fail2ban/jail.local
 ```
 Após abir procure as linhas e edite:
 ```
-bantime = 5m # Tempo de banimento após atingir o maxímo de tentativas por período (10 minutos) 
+bantime = 30m # Tempo de banimento após atingir o maxímo de tentativas por período (30 minutos) 
 findtime = 1m # Período de tentativas (1 minuto) 
 maxretry = 5 # Maxímo de tentaivas por período antes do banimento
 ```
-Após procure [sshd] o daemon do ssh e adcione embaixo enabled = true. Dessa forma:
+Após vá em jails e procure [sshd] o daemon do ssh e adcione embaixo enabled = true. Dessa forma:
 ```
 [sshd]
 enabled = true
@@ -498,7 +512,6 @@ Realize o ataque usando o comando:
 ```bash
 sudo hydra -l servidor -P /usr/share/wordlists/rockyou.txt ssh://172.16.0.1 -V
 ```
-(Foto do ataque mal sucedido)
 
 ### Iptables
 O iptables é o firewall nativo do linux para filtrar o trafego.
