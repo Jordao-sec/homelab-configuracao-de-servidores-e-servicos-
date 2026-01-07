@@ -1,50 +1,53 @@
 #!/bin/bash
 
 #Limpar regras antigas
-iptables -F
-iptables -X
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
+sudo iptables -F
+sudo iptables -X
+sudo iptables -t nat -F
+sudo iptables -t nat -X
+sudo iptables -t mangle -F
+sudo iptables -t mangle -X
 
 #Cria políticas padrões
-iptables -P INPUT DROP #Diz que se o pacote não bater com nenhuma regra ele vai ser descartado
-iptables -P FORWARD DROP ## Define política padrão DROP para pacotes que apenas atravessam o servidor (roteamento)
-iptables -P OUTPUT ACCEPT # Permite todo o tráfego originado pelo servidor
+sudo iptables -P INPUT DROP #Diz que se o pacote não bater com nenhuma regra ele vai ser descartado
+sudo iptables -P FORWARD DROP ## Define política padrão DROP para pacotes que apenas atravessam o servidor (roteamento)
+sudo iptables -P OUTPUT ACCEPT # Permite todo o tráfego originado pelo servidor
 
 
 # Loopback
-iptables -A INPUT -i lo -j ACCEPT # Permite que a interface de loopback funcione
+sudo iptables -A INPUT -i lo -j ACCEPT # Permite que a interface de loopback funcione
+
+#Ping
+sudo iptables -A INPUT -i icmp -j ACCEPT
 
 # Conexões estabelecidas
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT #Permite apenas conexões estabelecidas
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT #Permite apenas conexões estabelecidas
 
 
 #Abre as porta para os serviços
 # SSH 
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT 
+sudo iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 
 # NTP
-iptables -A INPUT -p udp --dport 123 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 123 -m conntrack --ctstate NEW -j ACCEPT
 
 
 # Webmin
-iptables -A INPUT -p tcp --dport 10000 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 10000 -m conntrack --ctstate NEW -j ACCEPT
 
 # Observação: as regras de DNS tem a interface ens37 definida para evitar scans vindo da rede externa (internet)
 # DNS
-iptables -A INPUT -p udp --dport 53 -i ens37 -j ACCEPT
-iptables -A INPUT -p tcp --dport 53 -i ens37 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 53 -i ens37 -m conntrack --ctstate NEW -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 53 -i ens37 -m conntrack --ctstate NEW -j ACCEPT
 
 #Regras de roteamento
 
 # LAN → Internet
-iptables -A FORWARD -i ens37 -o ens33 -j ACCEPT
+sudo iptables -A FORWARD -i ens37 -o ens33 -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
 
 # Internet → LAN (somente conexões já estabelecidas)
-iptables -A FORWARD -i ens33 -o ens37 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A FORWARD -i ens33 -o ens37 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 #Habilita o servidor a fazer NAT
 
-iptables -t nat -A POSTROUTING -o ens33 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -o ens33 -j MASQUERADE
