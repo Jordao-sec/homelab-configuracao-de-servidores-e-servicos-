@@ -3,7 +3,7 @@ Para definir um IP estático usaremos o netplan. Edite o arquivo com:
 ```bash
 sudo nano /etc/netplan/50-cloud-init.yaml
 ```
-No exemplo abaixo, usamos a interface `ens37`, que está conectada à rede interna. Remova o `dhcp4` dessa interface e adicione a configuração de endereço:
+Na interface ens37(caso não tenha adcione), que está conectada à rede interna. Remova o dhcp4 dessa interface e adicione a configuração de endereço:
 ```
 addresses:
 - 172.16.0.1/24
@@ -29,12 +29,6 @@ sudo apt install isc-dhcp-server
 ```
 
 #### Configuração
-Edite o arquivo que define a interface usada pelo serviço:
-```bash
-sudo nano /etc/default/isc-dhcp-server
-```
-Defina o nome da interface na variável `INTERFACESv4` (entre aspas) e salve o arquivo.
-
 Faça um backup do arquivo principal de configuração:
 ```bash
 sudo cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.backup
@@ -45,7 +39,7 @@ Edite o arquivo de configuração:
 sudo nano /etc/dhcp/dhcpd.conf
 ```
 
-Descomente a linha `authoritative` e adicione um bloco de exemplo para a sub-rede:
+Descomente a linha `authoritative` e adicione o seguinte para a sub-rede:
 ```bash
 subnet 172.16.0.0 netmask 255.255.255.0 {
   range 172.16.0.3 172.16.0.254;        # Faixa de endereços a ser distribuída
@@ -69,11 +63,6 @@ Verifique o status:
 sudo systemctl status isc-dhcp-server
 ```
 
-Se houver problemas, cheque novamente a sintaxe:
-```bash
-sudo dhcpd -t
-```
-
 No cliente, teste reiniciando a interface de rede ou ligando a máquina; o cliente deve obter um IP automaticamente. No servidor, monitore os logs para confirmar a concessão:
 ```bash
 sudo journalctl -u isc-dhcp-server -f
@@ -84,7 +73,6 @@ O serviço SSH permite acessar o servidor remotamente a partir de outros disposi
 #### Instalação
 Instale o servidor SSH:
 ```bash
-sudo apt update
 sudo apt install openssh-server
 ```
 
@@ -108,14 +96,22 @@ Verifique novamente:
 ```bash
 sudo systemctl status ssh
 ```
+Antes de começar a configuração o cliente precisa enviar sua chave publica para o servidor.
+No cliente crie o par de chaves de 2048 bits usando o comando:
+```bash
+ssh-keygen -t rsa -b 2048 -C "Homelab"
+```
+ Envie para o servidor usando o comando:
+ ```bash
+ssh-copy-id homelab.pub servidor@172.16.0.1
+```
 
 #### Configuração
 Recomenda-se ajustar algumas diretivas para aumentar a segurança. Edite o arquivo de configuração:
 ```bash
 sudo nano /etc/ssh/sshd_config
 ```
-
-Procure e altere (ou adicione) as seguintes diretivas conforme indicado:
+Procure e altere as seguintes diretivas a seguir:
 
 - PermitRootLogin no  
   - Impede login direto como root (recomendado para segurança; reduz tentativas de força bruta ao usuário root).
@@ -125,17 +121,6 @@ Procure e altere (ou adicione) as seguintes diretivas conforme indicado:
 
 - MaxSessions 3  
   - Número máximo de sessões simultâneas por conexão SSH.
-
-*Observação: as opções abaixo (autenticação por chave e por senha) devem ser usadas após o cliente enviar sua chave publica para o servidor.
-No cliente crie o par de chaves de 2048 bits usando o comando:
-```bash
-ssh-keygen -t rsa -b 2048 -C "Homelab"
-```
- Envie para o servidor usando o comando:
- ```bash
-ssh-copy-id homelab.pub servidor@172.16.0.1
-```
-Agora sim essas opções do arquivo sshd_conf podem ser modificas para essas:
 
 - PubkeyAuthentication yes  
   - Habilita autenticação por chave pública (mais segura que senha).
@@ -159,11 +144,10 @@ O serviço DNS traduz nomes de domínio em endereços IP. Aqui configuraremos um
 
 #### Instalação
 ```bash
-sudo apt update
 sudo apt install bind9 bind9-doc bind9utils
 ```
-- `bind9-doc`: documentação do BIND9.
-- `bind9utils`: ferramentas auxiliares para diagnóstico e testes.
+bind9-doc: documentação do BIND9.
+bind9utils: ferramentas auxiliares para diagnóstico e testes.
 
 #### Configuração
 Faça backup do arquivo de opções:
@@ -176,7 +160,7 @@ Edite o arquivo de opções:
 sudo nano /etc/bind/named.conf.options
 ```
 
-Exemplo de configuração (insira abaixo da diretiva `directory "/var/cache/bind";`):
+coloque o seguinte abaixo da linha directory "/var/cache/bind";:
 ```bash
 options {
     recursion yes;                  # Permitir resolver consultas usando outros servidores
@@ -195,24 +179,24 @@ Edite o arquivo local de zonas:
 sudo nano /etc/bind/named.conf.local
 ```
 
-Adicione as zonas (exemplo):
+Adicione as zonas:
 ```bash
 zone "www.laboratorio.com" {
     type master;
     file "/etc/bind/zones/db.www.laboratorio.com";
-    allow-transfer { 172.16.0.2; };  # Servidor secundário permitido (se houver)
+    allow-transfer { 172.16.0.2; };  # Endereço ip do servidor secundário
 };
 
 zone "0.16.172.in-addr.arpa" {
     type master;
     file "/etc/bind/zones/db.172.16.0";
-    allow-transfer { 172.16.0.2; };
+    allow-transfer { 172.16.0.2; }; #Endereço ip do servidor secundário
 };
 ```
 
 Crie o diretório de zones e copie o arquivo base:
 ```bash
-sudo mkdir -p /etc/bind/zones
+sudo mkdir /etc/bind/zones
 sudo cp /etc/bind/db.local /etc/bind/zones/db.www.laboratorio.com
 ```
 
@@ -220,7 +204,7 @@ Edite a zona direta:
 ```bash
 sudo nano /etc/bind/zones/db.www.laboratorio.com
 ```
-Substitua o registro padrão (`localhost. root.localhost.`) pelo SOA adequado, por exemplo:
+Substitua o registro padrão (`localhost. root.localhost.`) pelo SOA adequado:
 ```
 ns1.www.laboratorio.com. admin.laboratorio.com. (
                               3   ; Serial
@@ -286,7 +270,7 @@ Aplique:
 sudo sysctl -p
 ```
 
-Adicione regras de NAT no iptables (exemplo):
+Adicione regras de NAT no iptables:
 ```bash
 sudo iptables -t nat -A POSTROUTING -o ens33 -j MASQUERADE
 sudo iptables -A FORWARD -i ens37 -o ens33 -j ACCEPT
@@ -533,7 +517,7 @@ Políticas restritivas (DROP) por padrão.
 
 Libera as portas dos serviços.
 
-Roteamento entre as interfaces ens37 (LAN) e ens33 (WAN).
+Roteamento entre as interfaces ens37 (LAN) e ens33 rede externa.
 
 Para executar use o comando:
 ```bash
@@ -546,5 +530,5 @@ sudo iptables -L -v -n
 ```
 No cliente faça as os mesmos testes do DNS para verificar se roteamento está fucnionando e veja todas as portas abertas com o nmap usando o comando:
 ```bash
-sudo nmap -p- 172.16.0.1
+sudo nmap -sU -sT -p- 172.16.0.1
 ```
