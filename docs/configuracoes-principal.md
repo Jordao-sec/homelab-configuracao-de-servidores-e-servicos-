@@ -295,20 +295,20 @@ nslookup nomedominio_ou_ip      # Ex.: nslookup ns1.www.laboratorio.com ou algum
 ```
 
 ### NTP
-O NTP é um protocolo de sicronização de tempo para todos os dispositívos da rede estarem com o relogio sincronizado.
+O NTP é um protocolo de sincronização de tempo para que todos os dispositivos da rede estejam com o relógio sincronizado.
 
 ### Instalação
-Para instalar o NTP use o comando:
+Para instalar o NTP, use o comando:
 ```bash
 sudo apt install chrony
 ```
 
 ### Configuração
-Para configurar o NTP abra o arquivo chrony.conf. Usando o seguinte comando:
+Para configurar o NTP, abra o arquivo chrony.conf usando o seguinte comando:
 ```bash
 sudo nano /etc/chrony/chrony.conf
 ```
-Apague substitua os servidores do ubuntu pelos os servidores ntp.br e permita que responda as solicitações da rede interna da seguinte forma:
+Apague ou comente os servidores padrão do Ubuntu e substitua pelos servidores do ntp.br. Permita que o servidor responda às solicitações da rede interna da seguinte forma:
 ```
 server a.st1.ntp.br iburst nts
 server b.st1.ntp.br iburst nts
@@ -322,7 +322,7 @@ Salve o arquivo e reinicie o serviço usando:
 sudo systemctl restart chrony
 ```
 ### Teste
-Verfique o funcioanamento do NTP usando os seguintes comandos:
+Verifique o funcionamento do NTP usando os seguintes comandos:
 ```bash
 chronyc tracking
 chronyc sources
@@ -459,14 +459,15 @@ Após a instalação, teste o Webmin acessando pelo navegador do cliente atravé
   https://172.16.0.1:10000
 Para logar basta apenas o nome de usario e senha do proprio servidor.
 ### Fail2ban
-O Fail2ban é uma ferramenta que ajuda a previnir ataques de força bruta no servidor e bloquear atacantes.
+O Fail2ban é uma ferramenta que ajuda a prevenir ataques de força bruta no servidor e bloquear atacantes.
 
 ### Instalação 
-Para baixar o Fail2ban use o comando:
+Para instalar o Fail2ban, use o comando:
 ```bash
 sudo apt install fail2ban
 ```
-Crie um arquivo de configuração local do jail.conf, pois ele pode acabar sendo sobrescrito em caso de atualizações futuras do fail2ban, o use o comando:
+### Configuração
+Crie um arquivo de configuração local do jail.conf, pois ele pode ser sobrescrito em caso de atualizações futuras do Fail2ban. Use o comando:
 ```bash
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 ```
@@ -474,18 +475,18 @@ Abra o arquivo usando:
 ```bash
 sudo nano /etc/fail2ban/jail.local
 ```
-Após abir procure as linhas e edite:
+Após abrir, procure as seguintes linhas e edite:
 ```
-bantime = 30m # Tempo de banimento após atingir o maxímo de tentativas por período (30 minutos) 
+bantime = 5m # Tempo de banimento após atingir o maxímo de tentativas por período (5 minutos) 
 findtime = 1m # Período de tentativas (1 minuto) 
 maxretry = 5 # Maxímo de tentaivas por período antes do banimento
 ```
-Após vá em jails e procure [sshd] o daemon do ssh e adcione embaixo enabled = true. Dessa forma:
+Em seguida, vá até a seção de jails e procure [sshd] (o daemon do SSH) e adicione embaixo enabled = true. Dessa forma::
 ```
 [sshd]
 enabled = true
 ```
-Salve o arquivo, reinicei o serviço usando: 
+Salve o arquivo e reinicie o serviço usando: 
 ```bash
 sudo systemctl restart fail2ban
 ```
@@ -494,11 +495,11 @@ Verifique se a jail está ativa usando:
 sudo fail2ban-client status
 ```
 ### Teste
-Para o teste, abra o arquivo fail2ban.log em tempo real usando o seguinte comando:
+Para o teste, abra o arquivo fail2ban.log em tempo real usando o seguinte comando::
 ```bash
 tail -f /var/log/fail2ban.log
 ```
-Agora na maquina atacante faça uma wordlist para o teste ou pegue uma já pronta como rockyou.txt, para descompactar ela use:
+Agora, na máquina atacante, crie uma wordlist para o teste ou utilize uma já pronta como a rockyou.txt. Para descompactá-la, use:
 ```bash
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 ```
@@ -506,29 +507,27 @@ Realize o ataque usando o comando:
 ```bash
 sudo hydra -l servidor -P /usr/share/wordlists/rockyou.txt ssh://172.16.0.1 -V
 ```
-
+Observe o log do Fail2ban na outra janela do terminal. Após algumas tentativas falhas, o IP da máquina atacante será bloqueado automaticamente.
 ### Iptables
-O iptables é o firewall nativo do linux para filtrar o trafego.
+O iptables é o firewall nativo do Linux para filtrar o tráfego de rede.
 
 ### Configuração 
-Para configurar o iptables use o script deste repositorio localizado em scripts/firewall.sh. Ele configura:
+Para configurar o iptables, use o script deste repositório localizado em scripts/firewall.sh. Ele configura:
 
-Políticas restritivas (DROP) por padrão.
+Políticas restritivas (DROP) por padrão
+Libera as portas dos serviços necessários
+Roteamento entre as interfaces ens37 (LAN) e ens33 (rede externa)
 
-Libera as portas dos serviços.
-
-Roteamento entre as interfaces ens37 (LAN) e ens33 rede externa.
-
-Para executar use o comando:
+Para executar, use os comandos:
 ```bash
 sudo chmod +x firewall.sh
 sudo ./firewall.sh
 ```
-Verifique as regras usando o comando:
+Verifique as regras aplicadas usando o comando:
 ```bash
 sudo iptables -L -v -n
 ```
-No cliente faça as os mesmos testes do DNS para verificar se roteamento está fucnionando e veja todas as portas abertas com o nmap usando o comando:
+No cliente, faça os mesmos testes do DNS para verificar se o roteamento está funcionando. Veja todas as portas abertas com o nmap usando o comando:
 ```bash
 sudo nmap -sU -sT -p- 172.16.0.1
 ```
