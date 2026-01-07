@@ -63,22 +63,22 @@ Recomenda-se ajustar algumas diretivas para aumentar a segurança. Edite o arqui
 ```bash
 sudo nano /etc/ssh/sshd_config
 ```
-Procure e altere as seguintes diretivas conforme indicado:
+Procure e altere as seguintes opções:
 
     PermitRootLogin no
-        Impede login direto como root (recomendado para segurança; reduz tentativas de força bruta ao usuário root).
+        #Impede login direto como root (recomendado para segurança; reduz tentativas de força bruta ao usuário root).
 
     MaxAuthTries 3
-        Número de tentativas de autenticação permitidas antes de encerrar a conexão; ajuda a reduzir ataques de força bruta.
+        #Número de tentativas de autenticação permitidas antes de encerrar a conexão; ajuda a reduzir ataques de força bruta.
 
     MaxSessions 3
-        Número máximo de sessões simultâneas por conexão SSH.
+        #Número máximo de sessões simultâneas por conexão SSH.
 
     PubkeyAuthentication yes
-        Habilita autenticação por chave pública (mais segura que senha).
+        #Habilita autenticação por chave pública (mais segura que senha).
 
     PasswordAuthentication no
-        Desabilita autenticação por senha. Se for usar exclusivamente autenticação por chave pública, defina como no para reduzir a superfície de ataque. 
+        #Desabilita autenticação por senha. Se for usar exclusivamente autenticação por chave pública, defina como no para reduzir a superfície de ataque. 
 *Observação: A autenticação por senha deve ser permitida realizar o teste do fail2ban futuramente.
 
 Após salvar, reinicie o serviço:
@@ -195,21 +195,21 @@ nslookup nomedominio_ou_ip      # Ex.: nslookup ns1.www.laboratorio.com ou algum
 ### NTP
 
 ### Instalação
-Para instalar o NTP use o comando:
+Para instalar o NTP, use o comando:
 ```bash
 sudo apt install chrony
 ```
 ### Configuração
-Para configurar o NTP abra o arquivo chrony.conf. Usando o seguinte comando:
+Para configurar o NTP, abra o arquivo chrony.conf usando o seguinte comando:
 ```bash
 sudo nano /etc/chrony/chrony.conf
 ```
-Apague substitua os servidores do ubuntu pelo servidor primário e use o endereço da interface interna para sincronizar o relógio. Da seguinte forma :
+Apague ou comente os servidores padrão do Ubuntu e substitua pelo servidor primário e use o endereço da interface interna para sincronizar o relógio da seguinte forma :
 ```
 server 172.16.0.1 iburst
 bindaddress 172.16.0.2
 ```
-Reinicie o serviço usando:
+Salve o arquivo e reinicie o serviço usando:
 ```bash
 sudo systemctl restart bind9
 ```
@@ -232,7 +232,7 @@ Após configurar o repositório, instale o Webmin com o comando:
 ```bash
 sudo apt-get install --install-recommends webmin usermin
 ```
-Após a instalação, teste o Webmin acessando pelo navegador do cliente através de um dos endereços abaixo: https://ns1.www.laboratorio.com:10000 https://172.16.0.1:10000 Para logar basta apenas o nome de usario e senha do proprio servidor.
+Após a instalação, teste o Webmin acessando pelo navegador do cliente através de um dos endereços abaixo: https://ns1.www.laboratorio.com:10000 ou https://172.16.0.1:10000 para logar basta apenas o nome de usario e senha do proprio servidor.
 
 ### Iptables
 
