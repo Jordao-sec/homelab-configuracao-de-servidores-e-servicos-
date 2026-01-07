@@ -88,7 +88,7 @@ sudo systemctl restart ssh
 Teste a conexão a partir do cliente que possui a chave privada correspondente:
 ```bash
 ssh -i homelab servidor@172.16.0.2  
-```bash
+```
 Note que se você tentar se conectar da forma padrão:
 ```bash
 ssh servidor@172.16.0.2
