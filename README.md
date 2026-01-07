@@ -30,14 +30,15 @@ O laboratório foi pensado para fins **educacionais**, prática pessoal e como *
 
 - Linux (Ubuntu Server 24.04.3 LTS)
 - SSH
-- Fail2ban
 - DHCP
 - DNS (Bind9)
 - NTP (Chrony)
 - Docker
 - WordPress (em container)
-- Webmin
-- Portainer
+- Portainer 
+- webmin
+- fail2ban
+- hydra
 - iptables
 
 ---
@@ -80,11 +81,10 @@ O homelab é composto por **4 máquinas virtuais**:
   - SSH
 
 ### Máquina Atacante
-- Linux (ParootOS)
+- Linux (ParootOS 6.4 )
 - Utilizada para testar:
-  - Ataques de força bruta no SSH
+  - Ataques de força bruta no SSH via hydra
   - Funcionamento do Fail2ban
-  - Regras de firewall (iptables)
 
 ---
 
@@ -94,7 +94,7 @@ O homelab é composto por **4 máquinas virtuais**:
 - Servidor Primário atua como servidor de infraestrutura
 - Servidor Secundário fornece redundância de DNS
 - Cliente representa um usuário da rede
-- Máquina atacante simula ameaças internas/externas
+- Máquina atacante simula ameaças internas
 
   **Diagrama da rede:**  
 _(imagem será adicionada posteriormente)_
@@ -115,30 +115,39 @@ _(imagem será adicionada posteriormente)_
 
 - **Servidor Primário**
   - 1 interface em modo **Bridge** (acesso à internet)
-  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet19)**
 
 - **Servidor Secundário**
   - 1 interface em modo **Bridge** (acesso à internet)
-  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet19)**
 
 - **Cliente**
-  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet19)**
 
 - **Atacante**
-  - 1 interface em rede **customizada isolada para VMs(Vmnet20)**
+  - 1 interface em rede **customizada isolada para VMs(Vmnet19)**
 
 ---
 
 ##  Ordem de Implementação dos Serviços
 
-1. Instalação de serviços
+## Servidor primário
+
+1. Configuração do DHCP
 2. Configuração do SSH
-3. Configuração do DHCP
-4. Configuração do DNS (Primário e Secundário)
-5. Configuração do NTP
-6. Instalação do Docker
-7. Deploy do WordPress em container
-8. Instalação do Portainer
-9. Instalação do Webmin  
-10. Configuração do Fail2ban
-11. Configuração do iptables
+3. Configuração do DNS
+4. Configuração do NTP
+5. Instalação do Docker
+6. Deploy do WordPress em container
+7. Instalação do Portainer
+8. Instalação do Webmin  
+9. Configuração do Fail2ban
+10. Configuração do iptables
+
+## Servidor secundário
+
+1. Configuração do SSH
+2. Configuração DNS
+3. Configuração NTP
+4. Instalação do Webmin
+5. Configuração do iptables
