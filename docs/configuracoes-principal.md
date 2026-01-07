@@ -161,8 +161,7 @@ sudo nano /etc/bind/named.conf.options
 ```
 
 coloque o seguinte abaixo da linha directory "/var/cache/bind";:
-```bash
-options {
+```
     recursion yes;                  # Permitir resolver consultas usando outros servidores
     listen-on { 172.16.0.1; };      # Endereço em que o servidor vai escutar (ex.: interface interna)
     allow-transfer { none; };       # Desabilita transferência de zona por padrão
