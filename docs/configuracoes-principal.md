@@ -514,7 +514,9 @@ O iptables é o firewall nativo do Linux para filtrar o tráfego de rede.
 Para configurar o iptables, use o script deste repositório localizado em [firewall.sh](../scripts/firewall.sh). Ele configura:
 
 Políticas restritivas (DROP) por padrão
+
 Libera as portas dos serviços necessários
+
 Roteamento entre as interfaces ens37 (LAN) e ens33 (rede externa)
 
 Para executar, use os comandos:
