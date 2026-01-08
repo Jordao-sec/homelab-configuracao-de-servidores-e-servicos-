@@ -59,7 +59,7 @@ O homelab é composto por **4 máquinas virtuais**:
   - Webmin
   - Portainer
   - Fail2ban
-  - iptables
+  - Iptables
 
 ### Servidor Secundário
 - Ubuntu Server 24.04.3 LTS
@@ -68,17 +68,20 @@ O homelab é composto por **4 máquinas virtuais**:
   - SSH
   - Webmin
   - NTP (Cliente)
+  - Iptables
 
 ### Cliente
-- Linux (Kali Linux 2025.4 utilizado no projeto)
+- Linux (Kali Linux 2025.4)
 - Recebe IP via DHCP
 - Utilizado para testar:
+  - DHCP
+  - SSH 
   - DNS
-  - NTP
   - Acesso ao WordPress
-  - Acesso ao Webmin
   - Acesso ao Portainer
-  - SSH
+  - Acesso ao Webmin
+  
+    
 
 ### Máquina Atacante
 - Linux (ParootOS 6.4 )
@@ -102,7 +105,7 @@ O homelab é composto por **4 máquinas virtuais**:
 ---
 
 ## Endereçamento IP
-
+- Rede externa: `192.168.0.0/24`
 - Rede interna: `172.168.0.0/24`
 - Servidor Primário: `172.168.0.1`
 - Servidor Secundário: `172.168.0.2`
