@@ -237,7 +237,7 @@ Após a instalação, teste o Webmin acessando pelo navegador do cliente atravé
 ### Iptables
 
 ### Configuração
-Para configurar o iptables use o script deste repositorio localizado em scripts/firewall_secundario.sh. Ele configura:
+Para configurar o iptables use o script deste repositorio localizado em [firewall_secundario.sh](../scripts/firewall_secundario.sh). Ele configura:
 
 Políticas restritivas (DROP) por padrão.
 
