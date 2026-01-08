@@ -97,7 +97,7 @@ O homelab é composto por **4 máquinas virtuais**:
 - Máquina atacante simula ameaças internas
 
   **Diagrama da rede:**  
-_(imagem será adicionada posteriormente)_
+![Diagrama de Rede](diagrams/Diagrama_de_rede.png)
 
 ---
 
