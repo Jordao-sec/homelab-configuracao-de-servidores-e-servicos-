@@ -511,7 +511,7 @@ Observe o log do Fail2ban na outra janela do terminal. Após algumas tentativas 
 O iptables é o firewall nativo do Linux para filtrar o tráfego de rede.
 
 ### Configuração 
-Para configurar o iptables, use o script deste repositório localizado em [firewall.sh](scripts/firewall.sh). Ele configura:
+Para configurar o iptables, use o script deste repositório localizado em [firewall.sh](homelab-configuracao-de-servidores-e-servicos-/scripts/firewall.sh). Ele configura:
 
 Políticas restritivas (DROP) por padrão
 Libera as portas dos serviços necessários
