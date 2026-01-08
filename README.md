@@ -144,6 +144,7 @@ O homelab é composto por **4 máquinas virtuais**:
 9. Configuração do Fail2ban
 10. Configuração do iptables
 
+Para configurar o servidor primário, veja [configuracoes-principal.md](docs/configuracoes-principal.md)
 ## Servidor secundário
 
 1. Configuração do SSH
@@ -151,3 +152,5 @@ O homelab é composto por **4 máquinas virtuais**:
 3. Configuração NTP
 4. Instalação do Webmin
 5. Configuração do iptables
+
+Para configurar o servidor secundário, veja [configuracoes-secundario.md](docs/configuracoes-secundario.md)
